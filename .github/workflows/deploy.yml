@@ -1,0 +1,38 @@
+name: Angular CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Angular
+        run: npm run build
+
+      - name: Deploy to IIS
+        shell: powershell
+        run: |
+          $destination = "C:\inetpub\wwwroot\EmployeePortal"
+
+          Remove-Item "$destination\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+          Copy-Item `
+          "dist\EmployeePortal\browser\*" `
+          $destination `
+          -Recurse `
+          -Force
