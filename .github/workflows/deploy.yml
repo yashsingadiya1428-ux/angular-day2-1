@@ -24,6 +24,20 @@ jobs:
       - name: Build Angular
         run: npm run build
 
+      # Upload Build Artifact
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: angular-build
+          path: dist/EmployeePortal/browser
+
+      # Download Build Artifact
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: angular-build
+          path: deploy
+
       - name: Deploy to IIS
         shell: powershell
         run: |
@@ -32,7 +46,7 @@ jobs:
           Remove-Item "$destination\*" -Recurse -Force -ErrorAction SilentlyContinue
 
           Copy-Item `
-          "dist\EmployeePortal\browser\*" `
+          "deploy\*" `
           $destination `
           -Recurse `
           -Force
